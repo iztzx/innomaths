@@ -334,7 +334,7 @@ function startGame() {
     removeAllMushrooms();
     mushroomHealth = 3;
     wizardHealth = 3;
-    waveCount = 9;
+    waveCount = 0;
     bossPhase = false;
     bossHealth = 5;
     smallMushrooms = 0;
