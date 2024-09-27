@@ -399,6 +399,11 @@ function stopGameLoops() {
 
 // -------------------- Event Listeners --------------------
 
+const gameTitle = document.getElementById("game-title");
+gameTitle.addEventListener("click", function () {
+    window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "smooth" });
+});
+
 document.getElementById("submitAnswer").addEventListener("click", function () {
     const playerAnswer = document.getElementById("answer").value;
     if (playerAnswer == currentQuestion.correctAnswer) {
