@@ -169,7 +169,8 @@ function moveMagic() {
             } else {
                 target.remove(); // Hit the small mushroom
                 smallMushrooms--;
-                updateSmallMushroomQuestion();
+                currentSmallMushroomQuestion = generateSmallMushroomQuestion(); // Generate new question
+                updateSmallMushroomQuestion(); // Update question after hitting a small mushroom
             }
         } else {
             target.remove(); // Hit the regular mushroom
@@ -194,6 +195,7 @@ function moveMagic() {
         magic.style.bottom = Math.max(newBottom, magicMinHeight) + 'px'; // Update magic bottom position
     }
 }
+
 
 // -------------------- Boss Phase Functions --------------------
 
@@ -291,6 +293,7 @@ function updateSmallMushroomQuestion() {
     }
     document.getElementById("small-mushroom-question").textContent = `Small Mushroom: ${currentSmallMushroomQuestion.question}`;
 }
+
 
 function checkBossHealth() {
     if (bossHealth <= 0) {
