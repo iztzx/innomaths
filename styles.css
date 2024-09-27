@@ -1,0 +1,181 @@
+body {
+    font-family: "Jacquard 12", system-ui;
+    font-size: 60px;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+.game-container {
+    margin: 50px auto;
+    width: 600px;
+}
+
+#wizard-hearts {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.game-lane {
+    position: relative;
+    width: 600px;
+    height: 200px;
+    background-image: url('bg-game.gif');
+    margin: 20px auto;
+    border: 2px solid #333;
+    overflow: hidden;
+}
+
+.wizard, .mushroom, .boss {
+    position: absolute;
+    bottom: 25px;
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+}
+
+.wizard {
+    left: 20px;
+    background-image: url('wizard1.gif');
+}
+
+.mushroom {
+    background-image: url('mushroom.png');
+    transition: bottom 0.3s, left 0.1s;
+}
+
+.boss {
+    width: 100px;
+    height: 100px;
+    background-image: url('boss-mushroom.png');
+    right: 20px;
+}
+
+.magic {
+    position: absolute;
+    left: 70px;
+    bottom: 35px;
+    width: 40px;
+    height: 40px;
+    background-image: url('magic.png');
+    background-size: cover;
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+
+#question-container, #boss-question-container, #small-mushroom-question-container {
+    margin-top: 20px;
+}
+
+input[type="text"] {
+    width: 200px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#game-over {
+    margin-top: 50px;
+}
+
+.flash {
+    animation: flash 0.2s infinite alternate;
+}
+
+@keyframes flash {
+    from { opacity: 1; }
+    to { opacity: 0.5; }
+}
+
+#boss-and-mushroom-container {
+    display: flex;
+    justify-content: space-between; /* Space between questions */
+    align-items: flex-start; /* Align to the top */
+    gap: 20px; /* Spacing between the two containers */
+    margin: 20px auto; /* Ensure it's centered and spaced */
+    width: 100%; /* Let it use the full width of the parent */
+}
+
+#boss-question-container, #small-mushroom-question-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Allow both containers to grow evenly */
+    max-width: 45%; /* Adjust the width */
+}
+
+input, button {
+    margin-top: 10px; /* Spacing between input and button */
+}
+
+/* Optional: Responsive media query for smaller screens */
+@media (max-width: 768px) {
+    .game-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    #boss-and-mushroom-container {
+        flex-direction: column; /* Stack questions vertically on small screens */
+        gap: 10px; /* Reduce gap */
+    }
+
+    #boss-question-container, #small-mushroom-question-container {
+        max-width: 100%; /* Full width for smaller screens */
+    }
+
+    input[type="text"] {
+        width: 100%; /* Ensure input fields are responsive */
+    }
+}
+#boss-health-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#boss-health-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#boss-health-fill {
+    width: 100%;
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.3s ease-in-out;
+}
+
+#boss-health-text {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+}
+#boss-question-container p, 
+#small-mushroom-question-container p {
+    font-size: 30px; /* Adjust this value to make the font smaller */
+}
+
+#boss-question-container input, 
+#small-mushroom-question-container input {
+    font-size: 20px; /* Smaller font size for input fields */
+}
+
+#boss-question-container button, 
+#small-mushroom-question-container button {
+    font-size: 20px; /* Smaller font size for buttons */
+}

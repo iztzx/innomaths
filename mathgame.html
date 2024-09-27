@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Wizard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <h1 id="game-title">No Mushrooms in my Territory</h1>
+        <div class="game-lane">
+            <div id="wizard" class="wizard"></div>
+            <div id="magic" class="magic"></div>
+        </div>
+        <div id="wizard-hearts"></div>
+        
+        <!-- Regular game phase -->
+        <div id="regular-phase" class="game-phase">
+            <div id="question-container">
+                <p id="question"></p>
+                <input type="text" id="answer" placeholder="Your answer here">
+                <button id="submitAnswer">Shoot</button>
+            </div>
+        </div>
+        
+        <!-- Boss phase -->
+<div id="boss-phase" class="game-phase hidden">
+    <div id="boss-health-container">
+        <div id="boss-health-bar">
+            <div id="boss-health-fill"></div>
+        </div>
+        <span id="boss-health-text">Boss Health: 5/5</span>
+    </div>
+    <div id="boss-and-mushroom-container">
+        <div id="boss-question-container">
+            <p id="boss-question"></p>
+            <input type="text" id="boss-answer" placeholder="Boss answer">
+            <button id="boss-submit">Submit</button>
+        </div>
+        <div id="small-mushroom-question-container">
+            <p id="small-mushroom-question"></p>
+            <input type="text" id="small-mushroom-answer" placeholder="Small mushroom answer">
+            <button id="small-mushroom-submit">Submit</button>
+        </div>
+    </div>
+</div>
+
+        
+        <div id="game-over" class="hidden">
+            <h2 id="game-over-text">Game Over!</h2>
+            <button id="restart">Restart</button>
+        </div>
+        <audio id="hit-sound" src="hit-sound.mp3"></audio>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
