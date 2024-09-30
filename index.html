@@ -13,49 +13,65 @@
     <div class="game-container">
         <h1 id="game-title">No Mushrooms in my Territory</h1>
         <div class="game-lane">
+            <div id="boss-arrival" class="boss-arrival">
+                <span id="arrival-text">Boss arriving in 10 mushrooms</span>
+                <div class="boss-arrival-progress">
+                    <div id="arrival-bar" class="arrival-bar"></div>
+                </div>
+            </div>
             <div id="wizard" class="wizard"></div>
             <div id="magic" class="magic"></div>
         </div>
         <div id="wizard-hearts"></div>
-        
         <!-- Regular game phase -->
         <div id="regular-phase" class="game-phase">
             <div id="question-container">
                 <p id="question"></p>
-                <input type="text" id="answer" placeholder="Your answer here">
+                <p id="answer-format"></p>
+                <input type="text" id="answer1" placeholder="Answer 1">
+                <input type="text" id="answer2" placeholder="Answer 2">
                 <button id="submitAnswer">Shoot</button>
             </div>
         </div>
-        
         <!-- Boss phase -->
-<div id="boss-phase" class="game-phase hidden">
-    <div id="boss-health-container">
-        <div id="boss-health-bar">
-            <div id="boss-health-fill"></div>
+        <div id="boss-phase" class="game-phase hidden">
+            <div id="boss-health-container">
+                <div id="boss-health-bar">
+                    <div id="boss-health-fill"></div>
+                </div>
+                <span id="boss-health-text">Boss Health: 5/5</span>
+            </div>
+            <div id="boss-and-mushroom-container">
+                <div id="boss-question-container">
+                    <div id="boss-questions">
+                        <div id="boss-question-1">
+                            <p id="boss-question-text-1"></p>
+                            <input type="text" id="boss-answer-1-1" placeholder="Answer 1">
+                            <input type="text" id="boss-answer-1-2" placeholder="Answer 2">
+                            <p id="boss-answer-1-feedback"></p>
+                        </div>
+                        <div id="boss-question-2">
+                            <p id="boss-question-text-2"></p>
+                            <input type="text" id="boss-answer-2-1" placeholder="Answer 1">
+                            <input type="text" id="boss-answer-2-2" placeholder="Answer 2">
+                            <p id="boss-answer-2-feedback"></p>
+                        </div>
+                        <div id="boss-question-3">
+                            <p id="boss-question-text-3"></p>
+                            <input type="text" id="boss-answer-3-1" placeholder="Answer 1">
+                            <input type="text" id="boss-answer-3-2" placeholder="Answer 2">
+                            <p id="boss-answer-3-feedback"></p>
+                        </div>
+                    </div>
+                    <button id="boss-submit">Submit</button>
+                </div>
+            </div>
         </div>
-        <span id="boss-health-text">Boss Health: 5/5</span>
-    </div>
-    <div id="boss-and-mushroom-container">
-        <div id="boss-question-container">
-            <p id="boss-question"></p>
-            <input type="text" id="boss-answer" placeholder="Boss answer">
-            <button id="boss-submit">Submit</button>
-        </div>
-        <div id="small-mushroom-question-container">
-            <p id="small-mushroom-question"></p>
-            <input type="text" id="small-mushroom-answer" placeholder="Small mushroom answer">
-            <button id="small-mushroom-submit">Submit</button>
-        </div>
-    </div>
-</div>
-
-        
         <div id="game-over" class="hidden">
             <h2 id="game-over-text">Game Over!</h2>
             <button id="restart">Restart</button>
         </div>
-        <audio id="hit-sound" src="hit-sound.mp3"></audio>
     </div>
-    <script src="game.js"></script>
+    <script src="game copy.js"></script>
 </body>
 </html>

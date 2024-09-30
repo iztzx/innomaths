@@ -9,74 +9,85 @@ let waveCount = 0;
 let bossPhase = false;
 let bossHealth = 5;
 let smallMushrooms = 0;
+let bossQuestionIndex = 0;
 let magicTracking = false;
 let smallMushroomSpeed = 2;
 const totalWaves = 10;
-let currentQuestion, currentBossQuestion, currentSmallMushroomQuestion;
+let currentQuestion, currentBossQuestion;
 const magicMinHeight = 20; // Minimum height for magic projectile
+let targetBoss = false; // Flag to determine the target
 
 // -------------------- Question Generation Functions --------------------
 
 function generateQuestion() {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const operations = ['+', '-', '*', '/'];
-    const operation = operations[Math.floor(Math.random() * operations.length)];
-    let question, correctAnswer;
+    const types = ['factors', 'zeros', 'roots'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    let question, correctAnswer, answerFormat;
 
-    switch (operation) {
-        case '+':
-            question = `${num1} + ${num2}`;
-            correctAnswer = num1 + num2;
+    switch (type) {
+        case 'factors':
+            const root1 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
+            const root2 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
+            const a = 1;
+            const b = -(root1 + root2);
+            const c = root1 * root2;
+            question = `Find the factors of: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}`;
+            correctAnswer = [`(x${-root1 >= 0 ? '+' : ''}${-root1})`, `(x${-root2 >= 0 ? '+' : ''}${-root2})`];
+            answerFormat = "Enter factors in the format: (x+a) or (x-a)";
             break;
-        case '-':
-            question = `${num1} - ${num2}`;
-            correctAnswer = num1 - num2;
+        case 'zeros':
+            const zero1 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
+            const zero2 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
+            question = `Find the zeros of: x² ${-(zero1 + zero2) >= 0 ? '+' : ''}${-(zero1 + zero2)}x ${zero1 * zero2 >= 0 ? '+' : ''}${zero1 * zero2}`;
+            correctAnswer = [zero1, zero2].sort((a, b) => a - b).join(',');
+            answerFormat = "Enter zeros as an integer";
             break;
-        case '*':
-            question = `${num1} * ${num2}`;
-            correctAnswer = num1 * num2;
-            break;
-        case '/':
-            let divisionNum1 = num1 * num2;
-            question = `${divisionNum1} / ${num2}`;
-            correctAnswer = divisionNum1 / num2;
+        case 'roots':
+            const coeff = Math.floor(Math.random() * 5) + 1; // Integer between 1 and 5
+            const constant = Math.floor(Math.random() * 21) - 10; // Integer between -10 and 10
+            // Ensure the root is an integer
+            const root = Math.floor(Math.random() * 11) - 5; // Integer between -5 and 5
+            const adjustedConstant = -coeff * root;
+            question = `Find the root of: ${coeff}x ${adjustedConstant >= 0 ? '+' : ''}${adjustedConstant} = 0`;
+            correctAnswer = [root];
+            answerFormat = "Enter the root as an integer";
             break;
     }
-    return { question, correctAnswer: correctAnswer.toString() };
+    return { question, correctAnswer, answerFormat, type };
 }
 
-function generateBossQuestion() {
-    let root1, root2;
-    let a, b, c;
-
-    do {
-        root1 = Math.floor(Math.random() * 21) - 10;
-        root2 = Math.floor(Math.random() * 21) - 10;
-        a = 1;
-        b = -(root1 + root2);
-        c = root1 * root2;
-    } while (b === 0 || c === 0);
-
-    const question = `Solve for x: x² ${b > 0 ? '+' : ''}${b}x ${c > 0 ? '+' : ''}${c} = 0`;
-    
-    let correctAnswer;
-    if (root1 === root2) {
-        correctAnswer = root1.toString();
-    } else {
-        [root1, root2] = [root1, root2].sort((a, b) => a - b);
-        correctAnswer = `${root1},${root2}`;
+function generateBossQuestions() {
+    const questions = [];
+    for (let i = 0; i < 3; i++) {
+        questions.push(generateQuestion());
     }
-
-    return { question, correctAnswer };
+    return questions;
 }
 
-function generateSmallMushroomQuestion() {
-    return generateQuestion(); // Reuse the simple math question generator
+function displayBossQuestions() {
+    currentBossQuestions.forEach((q, index) => {
+        document.getElementById(`boss-question-text-${index + 1}`).textContent = q.question;
+        document.getElementById(`boss-answer-${index + 1}-1`).value = '';
+        document.getElementById(`boss-answer-${index + 1}-2`).value = '';
+        document.getElementById(`boss-answer-${index + 1}-feedback`).textContent = '';
+    });
+}
+
+function checkBossAnswer(index, answer1, answer2) {
+    const q = currentBossQuestions[index];
+    switch (q.type) {
+        case 'factors':
+            return (answer1 === q.correctAnswer[0] && answer2 === q.correctAnswer[1]) ||
+                   (answer1 === q.correctAnswer[1] && answer2 === q.correctAnswer[0]);
+        case 'zeros':
+            return [answer1, answer2].sort().join(',') === q.correctAnswer;
+        case 'roots':
+            return answer1 == q.correctAnswer[0] || answer2 == q.correctAnswer[0];
+    }
+    return false;
 }
 
 // -------------------- Mushroom Functions --------------------
-
 
 function spawnNewMushroom() {
     const gameLane = document.querySelector('.game-lane');
@@ -122,21 +133,31 @@ function moveMushroom() {
     if (!mushroom) return;
 
     let mushroomPosition = mushroom.offsetLeft;
-    
+
     if (mushroomPosition <= 70) {
         hitWizard();
-        mushroom.remove();
+        mushroom.remove(); // Ensure the mushroom is removed
         spawnNewMushroom();
     } else {
         mushroom.style.left = mushroomPosition - mushroomSpeed + 'px';
     }
 }
 
+
+
+
+
 // -------------------- Magic Projectile Functions --------------------
 
 function moveMagic() {
     const magic = document.getElementById("magic");
-    const target = bossPhase ? document.querySelector(".small-mushroom") : document.querySelector(".mushroom");
+    let target;
+
+    if (bossPhase) {
+        target = targetBoss ? document.querySelector(".boss") : document.querySelector(".small-mushroom");
+    } else {
+        target = document.querySelector(".mushroom:not(.small-mushroom)");
+    }
 
     if (!magic || !target) return;
 
@@ -153,20 +174,23 @@ function moveMagic() {
         magicTracking = false;
 
         if (bossPhase) {
-            target.remove();
-            smallMushrooms--;
-            currentSmallMushroomQuestion = generateSmallMushroomQuestion();
-            updateSmallMushroomQuestion();
+            if (targetBoss) {
+                hitBoss();
+            } else {
+                target.remove();
+                smallMushrooms--;
+            }
         } else {
             target.remove();
             waveCount++;
+            updateBossArrival(); // Ensure the arrival bar updates here
+
             if (waveCount >= totalWaves) {
                 startBossPhase();
             } else {
                 spawnNewMushroom();
             }
-            currentQuestion = generateQuestion();
-            document.getElementById("question").textContent = `What is ${currentQuestion.question}?`;
+            updateQuestion();
         }
     } else {
         magic.style.left = magicPosition + magicSpeed + 'px';
@@ -180,29 +204,45 @@ function moveMagic() {
     }
 }
 
+
+
 // -------------------- Boss Phase Functions --------------------
+function updateBossArrival() {
+    const remainingWaves = totalWaves - waveCount;
+    const arrivalText = document.getElementById("arrival-text");
+    const arrivalBar = document.getElementById("arrival-bar");
+    
+    arrivalText.textContent = `Boss arriving in ${remainingWaves} mushrooms`;
+    
+    // Update progress bar width based on remaining waves
+    const progressPercentage = (waveCount / totalWaves) * 100;
+    arrivalBar.style.width = `${100 - progressPercentage}%`;
+
+    // Hide the arrival message and bar when the boss arrives
+    if (remainingWaves <= 0) {
+        document.getElementById("boss-arrival").style.display = 'none';
+    }
+}
 
 function startBossPhase() {
     bossPhase = true;
     bossHealth = 5;
     updateBossHealth();
     
-    // Hide the regular question container
     document.getElementById("regular-phase").classList.add('hidden');
-    
-    // Show the boss phase container
     document.getElementById("boss-phase").classList.remove('hidden');
+    document.getElementById("boss-arrival").style.display = 'none'; // Hide the boss arrival bar
+
     const boss = document.createElement('div');
     boss.classList.add('boss');
     const gameLane = document.querySelector('.game-lane');
     gameLane.appendChild(boss);
     
-    currentBossQuestion = generateBossQuestion();
-    document.getElementById("boss-question").textContent = currentBossQuestion.question;
-    
-    currentSmallMushroomQuestion = generateSmallMushroomQuestion();
-    updateSmallMushroomQuestion();
+    currentBossQuestions = generateBossQuestions();
+    bossQuestionIndex = 0;
+    displayBossQuestions();
 }
+
 
 function updateBossHealth() {
     const healthBar = document.getElementById("boss-health-fill");
@@ -217,20 +257,21 @@ function hitBoss() {
     bossHealth--;
     updateBossHealth();
 
-    // Generate a new boss question after hitting the boss
-    currentBossQuestion = generateBossQuestion();
-    document.getElementById("boss-question").textContent = currentBossQuestion.question;
-
     if (bossHealth <= 0) {
         defeatBoss();
+    } else {
+        currentBossQuestions = generateBossQuestions();
+        displayBossQuestions();
     }
 }
+
+
+
 
 function defeatBoss() {
     const boss = document.querySelector('.boss');
     if (boss) boss.remove();
     
-    // Remove all small mushrooms
     const smallMushrooms = document.querySelectorAll('.small-mushroom');
     smallMushrooms.forEach(mushroom => mushroom.remove());
     
@@ -238,8 +279,6 @@ function defeatBoss() {
     document.getElementById("game-over-text").textContent = 'Congratulations, You Win!';
     stopGameLoops();
 }
-
-
 
 function spawnSmallMushroom() {
     if (!bossPhase || bossHealth <= 0 || smallMushrooms >= 3) return;
@@ -249,11 +288,14 @@ function spawnSmallMushroom() {
     smallMushroom.style.left = '500px';
     document.querySelector('.game-lane').appendChild(smallMushroom);
     
-    // Make small mushroom jump
     makeMushroomJump(smallMushroom);
     
     smallMushrooms++;
-    updateSmallMushroomQuestion();
+    
+    // Add event listener for tap to zap
+    smallMushroom.addEventListener('click', function() {
+        zapMushroom(smallMushroom);
+    });
 }
 
 function moveSmallMushrooms() {
@@ -265,26 +307,19 @@ function moveSmallMushrooms() {
             hitWizard();
             mushroom.remove();
             smallMushrooms--;
-            updateSmallMushroomQuestion();
-        } else{
+        } else {
             mushroom.style.left = mushroomPosition - smallMushroomSpeed + 'px';
         }
     });
 }
 
-function updateSmallMushroomQuestion() {
-    if (!currentSmallMushroomQuestion) {
-        currentSmallMushroomQuestion = generateSmallMushroomQuestion();
-    }
-    document.getElementById("small-mushroom-question").textContent = `Small Mushroom: ${currentSmallMushroomQuestion.question}`;
-}
-
-function checkBossHealth() {
-    if (bossHealth <= 0) {
-        document.querySelector('.boss').remove();
-        document.getElementById("game-over").classList.remove('hidden');
-        document.getElementById("game-over").innerHTML = 'Congratulations, You Win!';
-        stopGameLoops();
+function zapMushroom(mushroom) {
+    smallMushrooms--;
+    if (!magicMoving) {
+        document.getElementById("magic").style.display = 'block';
+        magicMoving = true;
+        magicTracking = true;
+        targetBoss = false;
     }
 }
 
@@ -293,10 +328,6 @@ function checkBossHealth() {
 function hitWizard() {
     wizardHealth -= 1;
     updateWizardHearts();
-
-    const hitSound = document.getElementById("hit-sound");
-    hitSound.play();
-
     const wizard = document.getElementById("wizard");
     wizard.classList.add("flash");
 
@@ -309,6 +340,7 @@ function hitWizard() {
     }
 }
 
+
 function updateWizardHearts() {
     const heartsDisplay = document.getElementById("wizard-hearts");
     heartsDisplay.innerHTML = '❤️'.repeat(wizardHealth);
@@ -316,34 +348,31 @@ function updateWizardHearts() {
 
 // -------------------- Game Control Functions --------------------
 
-
 function startGame() {
     removeAllMushrooms();
     mushroomHealth = 3;
     wizardHealth = 3;
-    waveCount = 9;
+    waveCount = 9   ;
     bossPhase = false;
     bossHealth = 5;
     smallMushrooms = 0;
 
-    // Make sure the boss phase container is hidden
     document.getElementById("boss-phase").classList.add('hidden');
     document.getElementById("regular-phase").classList.remove('hidden');
+    document.getElementById("boss-arrival").style.display = 'block'; // Ensure the boss arrival bar is visible at the start
     
     updateWizardHearts();
     document.getElementById("game-over").classList.add('hidden');
 
-    currentQuestion = generateQuestion();
-    document.getElementById("question").textContent = `What is ${currentQuestion.question}?`;
+    updateQuestion();
     
     spawnNewMushroom();
     startGameLoops();
 }
 
-
-
 function gameOver() {
     document.getElementById("game-over").classList.remove('hidden');
+    document.getElementById("game-over-text").textContent = 'Game Over!';
     stopGameLoops();
 }
 
@@ -384,49 +413,85 @@ function stopGameLoops() {
     clearInterval(jumpInterval);
 }
 
+function updateQuestion() {
+    currentQuestion = generateQuestion();
+    document.getElementById("question").textContent = currentQuestion.question;
+    document.getElementById("answer-format").textContent = currentQuestion.answerFormat;
+}
+
 // -------------------- Event Listeners --------------------
 
-document.getElementById("submitAnswer").addEventListener("click", function () {
-    const playerAnswer = document.getElementById("answer").value;
-    if (playerAnswer == currentQuestion.correctAnswer) {
-        if (!magicMoving) {
-            document.getElementById("magic").style.display = 'block';
-            magicMoving = true;
-            magicTracking = true;
+document.addEventListener('DOMContentLoaded', (event) => {
+    const gameTitle = document.getElementById("game-title");
+    gameTitle.addEventListener("click", function () {
+        window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "smooth" });
+    });
+
+    document.getElementById("submitAnswer").addEventListener("click", function () {
+        const playerAnswer1 = document.getElementById("answer1").value.trim();
+        const playerAnswer2 = document.getElementById("answer2").value.trim();
+        
+        let correct = false;
+        
+        switch (currentQuestion.type) {
+            case 'factors':
+                correct = (playerAnswer1 === currentQuestion.correctAnswer[0] && playerAnswer2 === currentQuestion.correctAnswer[1]) ||
+                          (playerAnswer1 === currentQuestion.correctAnswer[1] && playerAnswer2 === currentQuestion.correctAnswer[0]);
+                break;
+            case 'zeros':
+                const playerZeros = [playerAnswer1, playerAnswer2].sort().join(',');
+                correct = playerZeros === currentQuestion.correctAnswer;
+                break;
+            case 'roots':
+                correct = playerAnswer1 == currentQuestion.correctAnswer[0] || playerAnswer2 == currentQuestion.correctAnswer[0];
+                break;
         }
-    }
-    document.getElementById("answer").value = '';
-});
-
-document.getElementById("boss-submit").addEventListener("click", function () {
-    const playerAnswer = document.getElementById("boss-answer").value.trim();
-    const correctAnswerParts = currentBossQuestion.correctAnswer.split(',').map(Number).sort((a, b) => a - b);
-    const playerAnswerParts = playerAnswer.split(',').map(Number).sort((a, b) => a - b);
-
-    if (correctAnswerParts.length === playerAnswerParts.length && correctAnswerParts.every((val, index) => val === playerAnswerParts[index])) {
-        if (!magicMoving) {
-            document.getElementById("magic").style.display = 'block';
-            magicMoving = true;
-            magicTracking = true;
-            hitBoss(); // Hit the boss when the answer is correct
+        
+        if (correct) {
+            if (!magicMoving) {
+                document.getElementById("magic").style.display = 'block';
+                magicMoving = true;
+                magicTracking = true;
+            }
         }
-    }
-    document.getElementById("boss-answer").value = '';
-});
-
-document.getElementById("small-mushroom-submit").addEventListener("click", function () {
-    const playerAnswer = document.getElementById("small-mushroom-answer").value.trim();
-    if (playerAnswer == currentSmallMushroomQuestion.correctAnswer) {
-        if (!magicMoving) {
-            document.getElementById("magic").style.display = 'block';
-            magicMoving = true;
-            magicTracking = true;
+        document.getElementById("answer1").value = '';
+        document.getElementById("answer2").value = '';
+    });
+    
+    document.getElementById("boss-submit").addEventListener("click", function () {
+        let allCorrect = true;
+        currentBossQuestions.forEach((q, index) => {
+            const answer1 = document.getElementById(`boss-answer-${index + 1}-1`).value.trim();
+            const answer2 = document.getElementById(`boss-answer-${index + 1}-2`).value.trim();
+            const feedbackElement = document.getElementById(`boss-answer-${index + 1}-feedback`);
+            
+            if (checkBossAnswer(index, answer1, answer2)) {
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.style.color = 'green';
+            } else {
+                allCorrect = false;
+                feedbackElement.textContent = 'Incorrect. Try again.';
+                feedbackElement.style.color = 'red';
+                document.getElementById(`boss-answer-${index + 1}-1`).value = '';
+                document.getElementById(`boss-answer-${index + 1}-2`).value = '';
+            }
+        });
+    
+        if (allCorrect) {
+            if (!magicMoving) {
+                document.getElementById("magic").style.display = 'block';
+                magicMoving = true;
+                magicTracking = true;
+                targetBoss = true;
+            }
+            currentBossQuestions = generateBossQuestions();
+            displayBossQuestions();
         }
-    }
-    document.getElementById("small-mushroom-answer").value = '';
+    });
+       
+
+    document.getElementById("restart").addEventListener("click", startGame);
+
+    // Start the game when the page loads
+    startGame();
 });
-
-document.getElementById("restart").addEventListener("click", startGame);
-
-// Start the game when the page loads
-window.addEventListener('load', startGame);

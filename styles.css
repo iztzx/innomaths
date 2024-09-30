@@ -7,7 +7,7 @@ body {
 
 .game-container {
     margin: 50px auto;
-    width: 600px;
+    width: 1000px;
 }
 
 #wizard-hearts {
@@ -65,7 +65,7 @@ body {
     display: none;
 }
 
-#question-container, #boss-question-container, #small-mushroom-question-container {
+#question-container, #boss-question-container {
     margin-top: 20px;
 }
 
@@ -109,11 +109,17 @@ button:hover {
     width: 100%; /* Let it use the full width of the parent */
 }
 
-#boss-question-container, #small-mushroom-question-container {
+#boss-question-container {
     display: flex;
-    flex-direction: column;
-    flex: 1; /* Allow both containers to grow evenly */
-    max-width: 45%; /* Adjust the width */
+    justify-content: space-between; /* Space between questions */
+    align-items: center; /* Center align items */
+    flex: 1; /* Allow it to grow */
+    max-width: 70%; /* Adjust the width */
+}
+
+.boss-question {
+    display: inline-block;
+    margin-right: 20px;
 }
 
 input, button {
@@ -132,7 +138,7 @@ input, button {
         gap: 10px; /* Reduce gap */
     }
 
-    #boss-question-container, #small-mushroom-question-container {
+    #boss-question-container {
         max-width: 100%; /* Full width for smaller screens */
     }
 
@@ -140,6 +146,7 @@ input, button {
         width: 100%; /* Ensure input fields are responsive */
     }
 }
+
 #boss-health-container {
     width: 100%;
     margin-bottom: 10px;
@@ -165,17 +172,45 @@ input, button {
     text-align: center;
     margin-top: 5px;
 }
-#boss-question-container p, 
-#small-mushroom-question-container p {
+
+#boss-question-container p {
     font-size: 30px; /* Adjust this value to make the font smaller */
 }
 
-#boss-question-container input, 
-#small-mushroom-question-container input {
+#boss-question-container input {
     font-size: 20px; /* Smaller font size for input fields */
 }
 
-#boss-question-container button, 
-#small-mushroom-question-container button {
+#boss-question-container button {
     font-size: 20px; /* Smaller font size for buttons */
+}
+
+.boss-arrival {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 16px;
+    z-index: 100;
+}
+
+.boss-arrival-progress {
+    width: 80%;
+    height: 20px;
+    background-color: #ddd;
+    margin: 5px auto;
+    border-radius: 10px;
+    position: relative;
+}
+
+.arrival-bar {
+    height: 100%;
+    width: 100%;
+    background-color: green;
+    border-radius: 10px;
+    transition: width 0.5s;
 }
