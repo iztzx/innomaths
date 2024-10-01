@@ -19,16 +19,15 @@ let targetBoss = false; // Flag to determine the target
 
 // -------------------- Question Generation Functions --------------------
 
-function generateQuestion() {
+function generateQuestion(type = null) {
     const types = ['factors', 'zeros', 'roots'];
-    const type = types[Math.floor(Math.random() * types.length)];
+    type = type || types[Math.floor(Math.random() * types.length)];
     let question, correctAnswer, answerFormat;
 
     switch (type) {
         case 'factors':
-            const root1 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
-            const root2 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
-            const a = 1;
+            const root1 = Math.floor(Math.random() * 10) - 5;
+            const root2 = Math.floor(Math.random() * 10) - 5;
             const b = -(root1 + root2);
             const c = root1 * root2;
             question = `Find the factors of: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}`;
@@ -36,38 +35,57 @@ function generateQuestion() {
             answerFormat = "Enter factors in the format: (x+a) or (x-a)";
             break;
         case 'zeros':
-            const zero1 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
-            const zero2 = Math.floor(Math.random() * 10) - 5; // Integer between -5 and 4
+            const zero1 = Math.floor(Math.random() * 10) - 5;
+            const zero2 = Math.floor(Math.random() * 10) - 5;
             question = `Find the zeros of: x² ${-(zero1 + zero2) >= 0 ? '+' : ''}${-(zero1 + zero2)}x ${zero1 * zero2 >= 0 ? '+' : ''}${zero1 * zero2}`;
-            correctAnswer = [zero1, zero2].sort((a, b) => a - b).join(',');
-            answerFormat = "Enter zeros as an integer";
+            correctAnswer = [zero1, zero2].sort((a, b) => a - b);
+            answerFormat = "Enter zeros as integers (e.g., 3)";
             break;
         case 'roots':
-            const coeff = Math.floor(Math.random() * 5) + 1; // Integer between 1 and 5
-            const constant = Math.floor(Math.random() * 21) - 10; // Integer between -10 and 10
-            // Ensure the root is an integer
-            const root = Math.floor(Math.random() * 11) - 5; // Integer between -5 and 5
+            const coeff = Math.floor(Math.random() * 5) + 1;
+            const root = Math.floor(Math.random() * 11) - 5;
             const adjustedConstant = -coeff * root;
             question = `Find the root of: ${coeff}x ${adjustedConstant >= 0 ? '+' : ''}${adjustedConstant} = 0`;
             correctAnswer = [root];
-            answerFormat = "Enter the root as an integer";
+            answerFormat = "Enter the root as an integer (e.g., -2)";
             break;
     }
     return { question, correctAnswer, answerFormat, type };
 }
 
 function generateBossQuestions() {
-    return ['factors', 'zeros', 'roots'].map(() => generateQuestion());
+    return ['factors', 'zeros', 'roots'].map(type => generateQuestion(type));
 }
 
 
 
 function displayBossQuestions() {
+    currentBossQuestions = generateBossQuestions();
     currentBossQuestions.forEach((q, index) => {
-        document.getElementById(`boss-question-text-${index + 1}`).textContent = q.question;
-        document.getElementById(`boss-answer-${index + 1}-1`).value = '';
-        document.getElementById(`boss-answer-${index + 1}-2`).value = '';
-        document.getElementById(`boss-answer-${index + 1}-feedback`).textContent = '';
+        const questionElement = document.getElementById(`boss-question-${index + 1}`);
+        questionElement.querySelector(`#boss-question-text-${index + 1}`).textContent = q.question;
+        
+        const answer1Input = questionElement.querySelector(`#boss-answer-${index + 1}-1`);
+        const answer2Input = questionElement.querySelector(`#boss-answer-${index + 1}-2`);
+        
+        answer1Input.value = '';
+        answer2Input.value = '';
+        
+        // Update placeholders based on question type
+        if (q.type === 'zeros') {
+            answer1Input.placeholder = "Zero 1";
+            answer2Input.placeholder = "Zero 2";
+            answer2Input.style.display = 'inline';
+        } else if (q.type === 'roots') {
+            answer1Input.placeholder = "Root";
+            answer2Input.style.display = 'none';
+        } else if (q.type === 'factors') {
+            answer1Input.placeholder = "(x+a)";
+            answer2Input.placeholder = "(x-a)";
+            answer2Input.style.display = 'inline';
+        }
+        
+        questionElement.querySelector(`#boss-answer-${index + 1}-feedback`).textContent = '';
     });
 }
 
@@ -75,12 +93,24 @@ function checkBossAnswer(index, answer1, answer2) {
     const q = currentBossQuestions[index];
     switch (q.type) {
         case 'factors':
-            return (answer1 === q.correctAnswer[0] && answer2 === q.correctAnswer[1]) ||
-                   (answer1 === q.correctAnswer[1] && answer2 === q.correctAnswer[0]);
+            // Normalize the answers to handle (x) and (x+0) cases
+            const normalizeFactorAnswer = (answer) => {
+                answer = answer.replace(/\s/g, ''); // Remove all whitespace
+                if (answer === '(x)') return '(x+0)';
+                return answer;
+            };
+            const normalizedAnswer1 = normalizeFactorAnswer(answer1);
+            const normalizedAnswer2 = normalizeFactorAnswer(answer2);
+            const normalizedCorrect1 = normalizeFactorAnswer(q.correctAnswer[0]);
+            const normalizedCorrect2 = normalizeFactorAnswer(q.correctAnswer[1]);
+            
+            return (normalizedAnswer1 === normalizedCorrect1 && normalizedAnswer2 === normalizedCorrect2) ||
+                   (normalizedAnswer1 === normalizedCorrect2 && normalizedAnswer2 === normalizedCorrect1);
         case 'zeros':
-            return [answer1, answer2].sort().join(',') === q.correctAnswer;
+            const userZeros = [parseInt(answer1), parseInt(answer2)].sort((a, b) => a - b);
+            return userZeros.join(',') === q.correctAnswer.join(',');
         case 'roots':
-            return answer1 == q.correctAnswer[0] || answer2 == q.correctAnswer[0];
+            return parseInt(answer1) === q.correctAnswer[0];
     }
     return false;
 }
@@ -350,7 +380,7 @@ function startGame() {
     removeAllMushrooms();
     mushroomHealth = 3;
     wizardHealth = 3;
-    waveCount = 9   ;
+    waveCount = 0   ;
     bossPhase = false;
     bossHealth = 5;
     smallMushrooms = 0;
@@ -361,9 +391,8 @@ function startGame() {
     
     updateWizardHearts();
     document.getElementById("game-over").classList.add('hidden');
-
     updateQuestion();
-    
+    updateBossArrival();
     spawnNewMushroom();
     startGameLoops();
 }
