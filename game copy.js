@@ -57,12 +57,10 @@ function generateQuestion() {
 }
 
 function generateBossQuestions() {
-    const questions = [];
-    for (let i = 0; i < 3; i++) {
-        questions.push(generateQuestion());
-    }
-    return questions;
+    return ['factors', 'zeros', 'roots'].map(() => generateQuestion());
 }
+
+
 
 function displayBossQuestions() {
     currentBossQuestions.forEach((q, index) => {

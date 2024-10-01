@@ -8,6 +8,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <style>
+        .boss-questions {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Adds spacing between questions */
+        }
+
+        .boss-question {
+            flex: 1;
+            text-align: center;
+        }
+
+        .boss-question input {
+            width: 60px; /* Smaller input fields for answers */
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -43,23 +60,23 @@
             </div>
             <div id="boss-and-mushroom-container">
                 <div id="boss-question-container">
-                    <div id="boss-questions">
-                        <div id="boss-question-1">
+                    <div id="boss-questions" class="boss-questions">
+                        <div id="boss-question-1" class="boss-question">
                             <p id="boss-question-text-1"></p>
-                            <input type="text" id="boss-answer-1-1" placeholder="Answer 1">
-                            <input type="text" id="boss-answer-1-2" placeholder="Answer 2">
+                            <input type="text" id="boss-answer-1-1" placeholder="A1">
+                            <input type="text" id="boss-answer-1-2" placeholder="A2">
                             <p id="boss-answer-1-feedback"></p>
                         </div>
-                        <div id="boss-question-2">
+                        <div id="boss-question-2" class="boss-question">
                             <p id="boss-question-text-2"></p>
-                            <input type="text" id="boss-answer-2-1" placeholder="Answer 1">
-                            <input type="text" id="boss-answer-2-2" placeholder="Answer 2">
+                            <input type="text" id="boss-answer-2-1" placeholder="A1">
+                            <input type="text" id="boss-answer-2-2" placeholder="A2">
                             <p id="boss-answer-2-feedback"></p>
                         </div>
-                        <div id="boss-question-3">
+                        <div id="boss-question-3" class="boss-question">
                             <p id="boss-question-text-3"></p>
-                            <input type="text" id="boss-answer-3-1" placeholder="Answer 1">
-                            <input type="text" id="boss-answer-3-2" placeholder="Answer 2">
+                            <input type="text" id="boss-answer-3-1" placeholder="A1">
+                            <input type="text" id="boss-answer-3-2" placeholder="A2">
                             <p id="boss-answer-3-feedback"></p>
                         </div>
                     </div>
