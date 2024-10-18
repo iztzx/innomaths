@@ -23,27 +23,37 @@ function generateQuestion(type = null) {
     const types = ['factors', 'zeros', 'roots'];
     type = type || types[Math.floor(Math.random() * types.length)];
     let question, correctAnswer, answerFormat;
+    
+    const generateNonZeroRandom = (min, max) => {
+        let num;
+        do {
+            num = Math.floor(Math.random() * (max - min + 1)) + min;
+        } while (num === 0);
+        return num;
+    };
 
     switch (type) {
         case 'factors':
-            const root1 = Math.floor(Math.random() * 10) - 5;
-            const root2 = Math.floor(Math.random() * 10) - 5;
+            const root1 = generateNonZeroRandom(-5, 5);
+            const root2 = generateNonZeroRandom(-5, 5);
             const b = -(root1 + root2);
             const c = root1 * root2;
-            question = `Find the factors of: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}`;
+            question = `Find the factors of: x² ${b !== 0 ? (b > 0 ? '+' : '') + b + 'x' : ''} ${c >= 0 ? '+' : ''}${c}`;
             correctAnswer = [`(x${-root1 >= 0 ? '+' : ''}${-root1})`, `(x${-root2 >= 0 ? '+' : ''}${-root2})`];
             answerFormat = "Enter factors in the format: (x+a) or (x-a)";
             break;
         case 'zeros':
-            const zero1 = Math.floor(Math.random() * 10) - 5;
-            const zero2 = Math.floor(Math.random() * 10) - 5;
-            question = `Find the zeros of: x² ${-(zero1 + zero2) >= 0 ? '+' : ''}${-(zero1 + zero2)}x ${zero1 * zero2 >= 0 ? '+' : ''}${zero1 * zero2}`;
+            const zero1 = generateNonZeroRandom(-5, 5);
+            const zero2 = generateNonZeroRandom(-5, 5);
+            const sumZeros = -(zero1 + zero2);
+            const productZeros = zero1 * zero2;
+            question = `Find the zeros of: x²${sumZeros !== 0 ? ' ' + (sumZeros > 0 ? '+' : '') + sumZeros + 'x' : ''}${productZeros !== 0 ? ' ' + (productZeros > 0 ? '+' : '') + productZeros : ''}`;
             correctAnswer = [zero1, zero2].sort((a, b) => a - b);
             answerFormat = "Enter zeros as integers (e.g., 3)";
             break;
         case 'roots':
-            const coeff = Math.floor(Math.random() * 5) + 1;
-            const root = Math.floor(Math.random() * 11) - 5;
+            const coeff = generateNonZeroRandom(1, 5);
+            const root = generateNonZeroRandom(-5, 5);
             const adjustedConstant = -coeff * root;
             question = `Find the root of: ${coeff}x ${adjustedConstant >= 0 ? '+' : ''}${adjustedConstant} = 0`;
             correctAnswer = [root];
