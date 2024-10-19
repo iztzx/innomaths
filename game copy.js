@@ -47,9 +47,9 @@ function generateQuestion(type = null) {
             const zero2 = generateNonZeroRandom(-5, 5);
             const sumZeros = -(zero1 + zero2);
             const productZeros = zero1 * zero2;
-            question = `Find the zeros of: x²${sumZeros !== 0 ? ' ' + (sumZeros > 0 ? '+' : '') + sumZeros + 'x' : ''}${productZeros !== 0 ? ' ' + (productZeros > 0 ? '+' : '') + productZeros : ''}`;
+            question = `Find the zeros of: x²${sumZeros !== 0 ? ' ' + (sumZeros > 0 ? '+' : '') + sumZeros + 'x' : ''}${productZeros !== 0 ? ' ' + (productZeros > 0 ? '+' : '') + productZeros : ''} = 0`;
             correctAnswer = [zero1, zero2].sort((a, b) => a - b);
-            answerFormat = "Enter zeros as integers (e.g., 3)";
+            answerFormat = "Enter the two zeros as integers";
             break;
         case 'roots':
             const coeff = generateNonZeroRandom(1, 5);
@@ -57,7 +57,7 @@ function generateQuestion(type = null) {
             const adjustedConstant = -coeff * root;
             question = `Find the root of: ${coeff}x ${adjustedConstant >= 0 ? '+' : ''}${adjustedConstant} = 0`;
             correctAnswer = [root];
-            answerFormat = "Enter the root as an integer (e.g., -2)";
+            answerFormat = "Enter the root as an integer";
             break;
     }
     return { question, correctAnswer, answerFormat, type };
@@ -390,7 +390,7 @@ function startGame() {
     removeAllMushrooms();
     mushroomHealth = 3;
     wizardHealth = 3;
-    waveCount = 0   ;
+    waveCount = 9   ;
     bossPhase = false;
     bossHealth = 5;
     smallMushrooms = 0;
@@ -476,8 +476,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                           (playerAnswer1 === currentQuestion.correctAnswer[1] && playerAnswer2 === currentQuestion.correctAnswer[0]);
                 break;
             case 'zeros':
-                const playerZeros = [playerAnswer1, playerAnswer2].sort().join(',');
-                correct = playerZeros === currentQuestion.correctAnswer;
+                const playerZeros = [Number(playerAnswer1), Number(playerAnswer2)].sort((a, b) => a - b);
+                correct = JSON.stringify(playerZeros) === JSON.stringify(currentQuestion.correctAnswer);
                 break;
             case 'roots':
                 correct = playerAnswer1 == currentQuestion.correctAnswer[0] || playerAnswer2 == currentQuestion.correctAnswer[0];
